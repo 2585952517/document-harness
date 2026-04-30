@@ -1,0 +1,40 @@
+avilable_type:
+  - regex_match # 正则匹配模式，脚本需要编译
+  - str
+  - int
+  - promission # 由subagent执行，确保承诺有效
+  - relative_path
+
+document:
+  types:
+    name: regex_match
+    type: str
+    path: relative_path
+    desc: promission
+    # 确保当前文件和desc一致
+    verify: promission
+    # 确保其他文件对当前文件内容的交叉验证，确保当前文件能够支持verify的promission
+variant_require: # 用于匹配，并确认变体
+  name: regex_match
+  path: regex_match
+  priority: int
+  #  优先级，当命中多个变体时，优先级越大，则优先匹配，load时如果出现两个相同priority则直接退出并输出原因
+
+document_root: # 命中的文件，之后进入document_chains匹配
+  - "*.py"
+
+document_chains:
+  "*.py":
+    - variants:
+        - variant:
+            variant_require: # 先确定变体，之后才进行document-harness
+              name: "*_impl"
+              path: "*"
+              priority: 10
+            document_harness: # 用于约束文档
+              - document:
+                name: "*_design"
+                type: .md # 也可以是其他类型，例如 _test.py,要求测试文件等
+                path: "./"
+                desc: 描述对应的实现的详细设计
+                verify: 对应设计和代码实现一致
