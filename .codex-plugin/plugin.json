@@ -1,0 +1,10 @@
+{
+  "name": "document-harness",
+  "version": "0.1.0",
+  "description": "Document contract harness skills and promission supervision workflow for coding agents.",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Document Harness",
+    "description": "Validate document contracts and supervise promission status in document-harness.lock."
+  }
+}

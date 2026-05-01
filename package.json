@@ -1,0 +1,15 @@
+{
+  "name": "document-harness",
+  "version": "0.1.0",
+  "description": "Cross-agent document contract harness and promission supervision skills.",
+  "type": "commonjs",
+  "main": ".opencode/plugins/document-harness.mjs",
+  "bin": {
+    "document-harness": "./document-harness.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "verify": "node --test && node document-harness.js example_project"
+  },
+  "license": "MIT"
+}
