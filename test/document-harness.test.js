@@ -107,3 +107,41 @@ test('recomputes a root entry after its hash changes', () => {
     'pending',
   );
 });
+
+test('indexes files once instead of checking required files per root', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'document-harness-many-'));
+  const projectDir = path.join(dir, 'example_project');
+  const lockPath = path.join(dir, 'document-harness.lock');
+  const rootCount = 2000;
+
+  fs.mkdirSync(projectDir, { recursive: true });
+
+  for (let index = 0; index < rootCount; index += 1) {
+    const name = `file_${String(index).padStart(4, '0')}`;
+    fs.writeFileSync(path.join(projectDir, `${name}.py`), '# empty\n');
+
+    if (index % 2 === 0) {
+      fs.writeFileSync(path.join(projectDir, `${name}_design.md`), '# design\n');
+    }
+  }
+
+  const originalExistsSync = fs.existsSync;
+  let existsSyncCalls = 0;
+
+  fs.existsSync = (...args) => {
+    existsSyncCalls += 1;
+    return originalExistsSync(...args);
+  };
+
+  try {
+    const output = runHarness({ harnessPath, projectDir, lockPath });
+
+    assert.equal(output.missing.length, rootCount / 2);
+    assert.ok(
+      existsSyncCalls <= 1,
+      `expected required-file checks to use the file index, got ${existsSyncCalls} existsSync calls`,
+    );
+  } finally {
+    fs.existsSync = originalExistsSync;
+  }
+});

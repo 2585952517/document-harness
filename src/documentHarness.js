@@ -10,9 +10,10 @@ function runHarness(options = {}) {
   const projectDir = path.resolve(cwd, options.projectDir || 'example_project');
   const lockPath = path.resolve(cwd, options.lockPath || 'document-harness.lock');
 
-  const harness = parseHarness(fs.readFileSync(harnessPath, 'utf8'));
+  const harness = compileHarness(parseHarness(fs.readFileSync(harnessPath, 'utf8')));
   const previousLock = readLock(lockPath);
-  const rootFiles = findRootFiles(projectDir, harness.documentRoot);
+  const fileIndex = indexFiles(projectDir);
+  const rootFiles = findRootFiles(projectDir, fileIndex, harness.documentRoot);
   const nextLock = { version: LOCK_VERSION, roots: {} };
 
   for (const root of rootFiles) {
@@ -28,8 +29,8 @@ function runHarness(options = {}) {
     nextLock.roots[rootKey] = buildRootEntry({
       harness,
       projectDir,
+      fileIndex,
       rootRelativePath: root.relativePath,
-      rootKey,
       hash,
     });
   }
@@ -45,6 +46,19 @@ function parseHarness(source) {
   return {
     documentRoot: readTopLevelSequence(lines, 'document_root'),
     documentChains: readDocumentChains(lines),
+  };
+}
+
+function compileHarness(harness) {
+  return {
+    documentRoot: harness.documentRoot.map(createPathMatcher),
+    documentChains: Object.entries(harness.documentChains).map(([pattern, variants]) => ({
+      matcher: createPathMatcher(pattern),
+      variants: variants.map((variant) => ({
+        ...variant,
+        pathMatcher: createPathMatcher(variant.variantRequire.path || '*'),
+      })),
+    })),
   };
 }
 
@@ -264,14 +278,20 @@ function parseScalar(value) {
   return value;
 }
 
-function findRootFiles(projectDir, patterns) {
-  const files = listFiles(projectDir);
+function indexFiles(projectDir) {
+  const files = listFiles(projectDir).sort();
 
-  return files
+  return {
+    files,
+    fileSet: new Set(files),
+  };
+}
+
+function findRootFiles(projectDir, fileIndex, matchers) {
+  return fileIndex.files
     .filter((relativePath) =>
-      patterns.some((pattern) => matchesPathPattern(pattern, relativePath)),
+      matchers.some((matcher) => matcher.test(relativePath)),
     )
-    .sort()
     .map((relativePath) => ({
       relativePath,
       absolutePath: path.join(projectDir, relativePath),
@@ -301,7 +321,7 @@ function listFiles(dir) {
   return files;
 }
 
-function buildRootEntry({ harness, projectDir, rootRelativePath, rootKey, hash }) {
+function buildRootEntry({ harness, projectDir, fileIndex, rootRelativePath, hash }) {
   const items = [];
   const variants = matchingChainVariants(harness, rootRelativePath);
   const rootStem = stem(rootRelativePath);
@@ -315,7 +335,7 @@ function buildRootEntry({ harness, projectDir, rootRelativePath, rootKey, hash }
 
       items.push({
         path: requiredKey,
-        exists: fs.existsSync(path.join(projectDir, requiredRelativePath)),
+        exists: fileIndex.fileSet.has(requiredRelativePath),
         promission: promissionEntries(document),
       });
     }
@@ -330,12 +350,12 @@ function buildRootEntry({ harness, projectDir, rootRelativePath, rootKey, hash }
 function matchingChainVariants(harness, rootRelativePath) {
   const selected = [];
 
-  for (const [chainPattern, variants] of Object.entries(harness.documentChains)) {
-    if (!matchesPathPattern(chainPattern, rootRelativePath)) {
+  for (const chain of harness.documentChains) {
+    if (!chain.matcher.test(rootRelativePath)) {
       continue;
     }
 
-    const variant = selectVariant(variants, rootRelativePath);
+    const variant = selectVariant(chain.variants, rootRelativePath);
     if (variant) {
       selected.push(variant);
     }
@@ -348,8 +368,8 @@ function selectVariant(variants, rootRelativePath) {
   const rootStem = stem(rootRelativePath);
   const rootDir = toPosix(path.dirname(rootRelativePath));
   const pathCandidates = variants.filter((variant) =>
-    matchesPathPattern(variant.variantRequire.path || '*', rootRelativePath) ||
-    matchesPathPattern(variant.variantRequire.path || '*', rootDir),
+    variant.pathMatcher.test(rootRelativePath) ||
+    variant.pathMatcher.test(rootDir),
   );
 
   const exactMatches = pathCandidates
@@ -495,14 +515,26 @@ function stem(relativePath) {
 }
 
 function matchesPathPattern(pattern, relativePath) {
-  const normalized = toPosix(relativePath);
+  return createPathMatcher(pattern).test(relativePath);
+}
+
+function createPathMatcher(pattern) {
   const normalizedPattern = toPosix(String(pattern));
+  const regex = globToRegExp(normalizedPattern);
+  const basenameRegex = normalizedPattern.includes('/') ? null : regex;
 
-  if (globToRegExp(normalizedPattern).test(normalized)) {
-    return true;
-  }
+  return {
+    pattern: normalizedPattern,
+    test(relativePath) {
+      const normalized = toPosix(relativePath);
 
-  return !normalizedPattern.includes('/') && globToRegExp(normalizedPattern).test(path.posix.basename(normalized));
+      if (regex.test(normalized)) {
+        return true;
+      }
+
+      return basenameRegex !== null && basenameRegex.test(path.posix.basename(normalized));
+    },
+  };
 }
 
 function globToRegExp(pattern) {
