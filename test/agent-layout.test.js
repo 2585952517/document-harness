@@ -49,6 +49,26 @@ test('exposes document harness skills through cross-agent repository entrypoints
   }
 });
 
+test('keeps plugin identity metadata synchronized across supported agents', () => {
+  const codexPlugin = readJson('.codex-plugin/plugin.json');
+  const claudePlugin = readJson('.claude-plugin/plugin.json');
+  const geminiExtension = readJson('gemini-extension.json');
+  const packageJson = readJson('package.json');
+
+  const manifests = [codexPlugin, claudePlugin, geminiExtension, packageJson];
+
+  for (const manifest of manifests) {
+    assert.equal(manifest.name, 'document-harness');
+    assert.equal(manifest.version, '0.1.0');
+    assert.equal(manifest.author, 'whereslow');
+    assert.match(manifest.description, /Document Harness/i);
+    assert.match(manifest.description, /promission/i);
+  }
+
+  assert.equal(packageJson.license, 'MIT');
+  assert.equal(codexPlugin.interface.displayName, 'Document Harness');
+});
+
 test('agent instructions route harness creation to the authoring skill', () => {
   const agentEntrypoints = ['CLAUDE.md', 'AGENTS.md', 'GEMINI.md'];
 

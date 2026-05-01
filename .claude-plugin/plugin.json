@@ -1,5 +1,6 @@
 {
   "name": "document-harness",
   "version": "0.1.0",
-  "description": "Document contract harness skills and promission supervision workflow for Claude Code."
+  "author": "whereslow",
+  "description": "Document Harness skills for document contract validation and promission supervision in Claude Code."
 }

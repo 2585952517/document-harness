@@ -1,7 +1,8 @@
 {
   "name": "document-harness",
   "version": "0.1.0",
-  "description": "Cross-agent document contract harness and promission supervision skills.",
+  "author": "whereslow",
+  "description": "Document Harness skills for cross-agent document contract validation and promission supervision.",
   "type": "commonjs",
   "main": ".opencode/plugins/document-harness.mjs",
   "bin": {
