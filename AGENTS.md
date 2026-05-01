@@ -10,6 +10,8 @@ Use `promission-supervisor` when the agent is being called to supervise promissi
 
 Use the `document-harness:maintainer` subagent for delegated maintenance: classify files as invalid or necessary, move/rename/edit/remove invalid files, create companion files for necessary roots, execute promissions, and update `document-harness.lock`.
 
+Before supervising maintenance, read the target project's `memory/project-understanding.md` and `harness.yaml`. Treat the memory as the project essence record; update it whenever maintenance changes what files should exist, move, be deleted, or be inlined into other files.
+
 Operational rules:
 
 - Run `node document-harness.js <projectDir>` from the repository root to refresh effective results.

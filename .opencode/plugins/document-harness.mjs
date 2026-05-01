@@ -19,7 +19,7 @@ export const DocumentHarnessPlugin = async ({ project }) => ({
     ...params,
     system: [
       params.system,
-      'Document Harness plugin is available. Use harness-author for conversational harness.yaml creation, document-harness for validation, promission-supervisor for supervision, and agents/maintainer.md when maintenance must be delegated.',
+      'Document Harness plugin is available. Use harness-author for conversational harness.yaml creation, document-harness for validation, promission-supervisor for supervision, memory/project-understanding.md as project essence memory, and agents/maintainer.md when maintenance must be delegated.',
     ].filter(Boolean).join('\n\n'),
   }),
 });

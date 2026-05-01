@@ -11,3 +11,5 @@ Use `document-harness` for `harness.yaml` validation and `document-harness.lock`
 Use `promission-supervisor` when acting as the called agent that supervises pending promissions and updates only their status in `document-harness.lock`.
 
 Delegate Document Harness maintenance to `document-harness:maintainer`: it decides whether files are invalid or necessary, fixes invalid files, creates required companion files for necessary roots, executes promissions, and updates `document-harness.lock`.
+
+Before supervising maintenance, read the target project's `memory/project-understanding.md` and `harness.yaml`. Treat the memory as the project essence record; update it whenever maintenance changes what files should exist, move, be deleted, or be inlined into other files.

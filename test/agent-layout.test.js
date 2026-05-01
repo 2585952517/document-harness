@@ -44,6 +44,7 @@ test('exposes document harness skills through cross-agent repository entrypoints
     '.opencode/INSTALL.md',
     '.opencode/plugins/document-harness.mjs',
     'agents/maintainer.md',
+    'memory/project-understanding.md',
     'skills/document-harness/SKILL.md',
     'skills/harness-author/SKILL.md',
     'skills/promission-supervisor/SKILL.md',
@@ -168,4 +169,48 @@ test('promission supervisor delegates file maintenance decisions to maintainer s
   assert.match(supervisorSkill, /necessary .*create .*companion/i);
   assert.match(supervisorSkill, /update .*document-harness\.lock/i);
   assert.match(entrypoints, /document-harness:maintainer/);
+});
+
+test('promission maintenance uses project memory and harness semantics before changing files', () => {
+  const supervisorSkill = read('skills/promission-supervisor/SKILL.md');
+  const maintainerAgent = read('agents/maintainer.md');
+  const memory = read('memory/project-understanding.md');
+  const entrypoints = [
+    read('CLAUDE.md'),
+    read('AGENTS.md'),
+    read('GEMINI.md'),
+    read('.claude-plugin/INSTALL.md'),
+    read('.codex/INSTALL.md'),
+    read('.opencode/INSTALL.md'),
+    read('.opencode/plugins/document-harness.mjs'),
+  ].join('\n');
+
+  for (const content of [supervisorSkill, maintainerAgent]) {
+    assert.match(content, /memory\/project-understanding\.md/);
+    assert.match(content, /harness\.yaml/);
+    assert.match(content, /target project/i);
+    assert.match(content, /project perspective/i);
+    assert.match(content, /project essence/i);
+    assert.match(content, /update .*memory/i);
+    assert.match(content, /read .*harness\.yaml/i);
+    assert.match(content, /what .*means/i);
+    assert.match(content, /inline .*other file/i);
+    assert.match(content, /delete/i);
+    assert.match(content, /move/i);
+    assert.match(content, /not .*mechanically/i);
+    assert.match(content, /before .*change/i);
+  }
+
+  assert.match(supervisorSkill, /delegate .*memory/i);
+  assert.match(supervisorSkill, /If .*project essence .*changes.*update .*memory/i);
+  assert.match(entrypoints, /memory\/project-understanding\.md/);
+  assert.match(entrypoints, /project essence/i);
+
+  assert.match(memory, /^# Project Understanding Memory/m);
+  assert.match(memory, /Project Essence/);
+  assert.match(memory, /Harness Semantics/);
+  assert.match(memory, /Maintenance Decisions/);
+  assert.match(memory, /Target Project/);
+  assert.match(memory, /File Existence Policy/);
+  assert.match(memory, /Update this file/);
 });

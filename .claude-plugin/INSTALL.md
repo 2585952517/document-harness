@@ -20,3 +20,5 @@ The plugin exposes these skills:
 - `document-harness`
 - `promission-supervisor`
 - `document-harness:maintainer` named subagent
+
+Promission supervision uses the target project's `memory/project-understanding.md` as the project essence record. Keep it aligned with `harness.yaml` whenever maintenance changes file existence, movement, deletion, or inline-content rules.

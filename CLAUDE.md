@@ -10,6 +10,8 @@ Use `skills/promission-supervisor/SKILL.md` when acting as the called agent that
 
 Use the `document-harness:maintainer` subagent for Document Harness maintenance work: deciding whether a file is invalid or necessary, moving/editing invalid files, creating required companion files for necessary roots, executing promissions, and updating `document-harness.lock`.
 
+Before supervising maintenance, read the target project's `memory/project-understanding.md` and `harness.yaml`. Treat the memory as the project essence record; update it whenever maintenance changes what files should exist, move, be deleted, or be inlined into other files.
+
 Keep these boundaries:
 
 - Run `node document-harness.js <projectDir>` before supervising current results.
