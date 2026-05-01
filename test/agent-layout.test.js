@@ -60,9 +60,14 @@ test('keeps plugin identity metadata synchronized across supported agents', () =
   for (const manifest of manifests) {
     assert.equal(manifest.name, 'document-harness');
     assert.equal(manifest.version, '0.1.0');
-    assert.equal(manifest.author, 'whereslow');
+    assert.deepEqual(manifest.author, { name: 'whereslow' });
     assert.match(manifest.description, /Document Harness/i);
     assert.match(manifest.description, /promission/i);
+    assert.equal(manifest.homepage, 'https://github.com/whereslow/document-harness');
+    assert.equal(manifest.repository, 'https://github.com/whereslow/document-harness');
+    assert.equal(manifest.license, 'MIT');
+    assert.ok(manifest.keywords.includes('skills'));
+    assert.ok(manifest.keywords.includes('promission'));
   }
 
   assert.equal(packageJson.license, 'MIT');

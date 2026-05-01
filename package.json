@@ -1,8 +1,12 @@
 {
   "name": "document-harness",
   "version": "0.1.0",
-  "author": "whereslow",
+  "author": {
+    "name": "whereslow"
+  },
   "description": "Document Harness skills for cross-agent document contract validation and promission supervision.",
+  "homepage": "https://github.com/whereslow/document-harness",
+  "repository": "https://github.com/whereslow/document-harness",
   "type": "commonjs",
   "main": ".opencode/plugins/document-harness.mjs",
   "bin": {
@@ -12,5 +16,12 @@
     "test": "node --test",
     "verify": "node --test && node document-harness.js example_project"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "document-harness",
+    "promission",
+    "validation",
+    "agents"
+  ]
 }

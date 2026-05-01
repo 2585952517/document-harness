@@ -1,6 +1,18 @@
 {
   "name": "document-harness",
   "version": "0.1.0",
-  "author": "whereslow",
-  "description": "Document Harness skills for document contract validation and promission supervision in Claude Code."
+  "author": {
+    "name": "whereslow"
+  },
+  "description": "Document Harness skills for document contract validation and promission supervision in Claude Code.",
+  "homepage": "https://github.com/whereslow/document-harness",
+  "repository": "https://github.com/whereslow/document-harness",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "document-harness",
+    "promission",
+    "validation",
+    "agents"
+  ]
 }
