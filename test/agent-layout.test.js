@@ -39,6 +39,8 @@ test('exposes document harness skills through cross-agent repository entrypoints
     'AGENTS.md',
     'GEMINI.md',
     '.codex/INSTALL.md',
+    '.claude-plugin/INSTALL.md',
+    '.claude-plugin/marketplace.json',
     '.opencode/INSTALL.md',
     '.opencode/plugins/document-harness.mjs',
     'skills/document-harness/SKILL.md',
@@ -52,6 +54,7 @@ test('exposes document harness skills through cross-agent repository entrypoints
 test('keeps plugin identity metadata synchronized across supported agents', () => {
   const codexPlugin = readJson('.codex-plugin/plugin.json');
   const claudePlugin = readJson('.claude-plugin/plugin.json');
+  const claudeMarketplace = readJson('.claude-plugin/marketplace.json');
   const geminiExtension = readJson('gemini-extension.json');
   const packageJson = readJson('package.json');
 
@@ -72,6 +75,17 @@ test('keeps plugin identity metadata synchronized across supported agents', () =
 
   assert.equal(packageJson.license, 'MIT');
   assert.equal(codexPlugin.interface.displayName, 'Document Harness');
+  assert.equal(claudeMarketplace.name, 'document-harness');
+  assert.equal(claudeMarketplace.owner.name, 'whereslow');
+  assert.deepEqual(claudeMarketplace.plugins, [
+    {
+      name: 'document-harness',
+      description: 'Document Harness skills for document contract validation and promission supervision in Claude Code.',
+      version: '0.1.0',
+      source: './',
+      author: { name: 'whereslow' },
+    },
+  ]);
 });
 
 test('agent instructions route harness creation to the authoring skill', () => {

@@ -1,0 +1,18 @@
+{
+  "name": "document-harness",
+  "description": "Marketplace for Document Harness skills and promission supervision agents.",
+  "owner": {
+    "name": "whereslow"
+  },
+  "plugins": [
+    {
+      "name": "document-harness",
+      "description": "Document Harness skills for document contract validation and promission supervision in Claude Code.",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "whereslow"
+      }
+    }
+  ]
+}
