@@ -8,6 +8,8 @@ Use `skills/document-harness/SKILL.md` when validating a project with `harness.y
 
 Use `skills/promission-supervisor/SKILL.md` when acting as the called agent that checks pending promissions and updates their status in `document-harness.lock`.
 
+Use the `document-harness:maintainer` subagent for Document Harness maintenance work: deciding whether a file is invalid or necessary, moving/editing invalid files, creating required companion files for necessary roots, executing promissions, and updating `document-harness.lock`.
+
 Keep these boundaries:
 
 - Run `node document-harness.js <projectDir>` before supervising current results.

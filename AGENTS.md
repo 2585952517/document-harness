@@ -8,6 +8,8 @@ Use `document-harness` when a task involves `harness.yaml`, concise validation J
 
 Use `promission-supervisor` when the agent is being called to supervise promission completion. The supervisor checks pending promissions from `document-harness.lock` and updates only the matching promission status.
 
+Use the `document-harness:maintainer` subagent for delegated maintenance: classify files as invalid or necessary, move/rename/edit/remove invalid files, create companion files for necessary roots, execute promissions, and update `document-harness.lock`.
+
 Operational rules:
 
 - Run `node document-harness.js <projectDir>` from the repository root to refresh effective results.

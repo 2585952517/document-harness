@@ -109,6 +109,6 @@ When presenting the file to the user, explain it in plain language:
 
 "This harness says: every file matching `<root-pattern>` is a root. For each root, the harness expects `<required-name><required-type>` at `<required-relative-path>`. That companion is expected to satisfy the listed promissions. The verifier will report missing companions and store promission status in `document-harness.lock`."
 
-## Optional Example
+## Examples
 
-Only use a concrete example after the user has chosen that model. For example, if the user says Python source files need sibling design documents, then `*.py` roots and `*_design.md` companions are reasonable. Do not present that as the default for unrelated or empty projects.
+Do not include a concrete example until the user has chosen a domain model. If an example would help, first restate the user's chosen root pattern and companion rule, then instantiate the neutral template with those exact choices.

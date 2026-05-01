@@ -19,3 +19,4 @@ The plugin exposes these skills:
 - `harness-author`
 - `document-harness`
 - `promission-supervisor`
+- `document-harness:maintainer` named subagent

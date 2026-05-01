@@ -43,6 +43,7 @@ test('exposes document harness skills through cross-agent repository entrypoints
     '.claude-plugin/marketplace.json',
     '.opencode/INSTALL.md',
     '.opencode/plugins/document-harness.mjs',
+    'agents/maintainer.md',
     'skills/document-harness/SKILL.md',
     'skills/harness-author/SKILL.md',
     'skills/promission-supervisor/SKILL.md',
@@ -115,6 +116,9 @@ test('harness author does not treat repository examples as the default contract 
   assert.doesNotMatch(authorSkill, /Use this shape as the starting point:[\s\S]*"\*\.py"/);
   assert.doesNotMatch(authorSkill, /Use this shape as the starting point:[\s\S]*\*_design/);
   assert.doesNotMatch(authorSkill, /This harness says: every `\*\.py` file is a root/);
+  assert.doesNotMatch(authorSkill, /\*\.py/);
+  assert.doesNotMatch(authorSkill, /\*_design/);
+  assert.doesNotMatch(authorSkill, /sibling design documents/i);
 });
 
 test('agent instructions route promission supervision to the dedicated skill', () => {
@@ -132,4 +136,36 @@ test('agent instructions route promission supervision to the dedicated skill', (
   assert.match(supervisorSkill, /Use when .*promission/i);
   assert.match(supervisorSkill, /Do not create missing/);
   assert.match(supervisorSkill, /update only/i);
+});
+
+test('defines a document harness maintainer subagent for delegated maintenance work', () => {
+  const maintainerAgent = read('agents/maintainer.md');
+
+  assert.match(maintainerAgent, /^---\nname: maintainer\n/m);
+  assert.match(maintainerAgent, /document-harness\.lock/);
+  assert.match(maintainerAgent, /invalid/i);
+  assert.match(maintainerAgent, /necessary/i);
+  assert.match(maintainerAgent, /move, rename, edit, or remove/i);
+  assert.match(maintainerAgent, /create .*companion/i);
+  assert.match(maintainerAgent, /update .*document-harness\.lock/i);
+});
+
+test('promission supervisor delegates file maintenance decisions to maintainer subagent', () => {
+  const supervisorSkill = read('skills/promission-supervisor/SKILL.md');
+  const entrypoints = [
+    read('CLAUDE.md'),
+    read('AGENTS.md'),
+    read('GEMINI.md'),
+    read('.claude-plugin/INSTALL.md'),
+    read('.codex/INSTALL.md'),
+    read('.opencode/INSTALL.md'),
+    read('.opencode/plugins/document-harness.mjs'),
+  ].join('\n');
+
+  assert.match(supervisorSkill, /document-harness:maintainer/);
+  assert.match(supervisorSkill, /delegate/i);
+  assert.match(supervisorSkill, /invalid .*move, rename, edit, or remove/i);
+  assert.match(supervisorSkill, /necessary .*create .*companion/i);
+  assert.match(supervisorSkill, /update .*document-harness\.lock/i);
+  assert.match(entrypoints, /document-harness:maintainer/);
 });
