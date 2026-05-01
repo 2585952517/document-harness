@@ -105,6 +105,18 @@ test('agent instructions route harness creation to the authoring skill', () => {
   assert.match(authorSkill, /explain/i);
 });
 
+test('harness author does not treat repository examples as the default contract model', () => {
+  const authorSkill = read('skills/harness-author/SKILL.md');
+
+  assert.match(authorSkill, /Do not infer Python/i);
+  assert.match(authorSkill, /neutral template/i);
+  assert.match(authorSkill, /<root-pattern>/);
+  assert.match(authorSkill, /<required-name>/);
+  assert.doesNotMatch(authorSkill, /Use this shape as the starting point:[\s\S]*"\*\.py"/);
+  assert.doesNotMatch(authorSkill, /Use this shape as the starting point:[\s\S]*\*_design/);
+  assert.doesNotMatch(authorSkill, /This harness says: every `\*\.py` file is a root/);
+});
+
 test('agent instructions route promission supervision to the dedicated skill', () => {
   const agentEntrypoints = ['CLAUDE.md', 'AGENTS.md', 'GEMINI.md'];
 

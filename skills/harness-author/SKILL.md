@@ -11,6 +11,8 @@ Guide the user from project intent to a working `harness.yaml`. The user should 
 
 Do not require the user to hand-write `harness.yaml`. Ask the user focused questions, inspect the project when allowed, propose a small contract model, explain the YAML, then write or update the file.
 
+Do not infer Python, TypeScript, tests, stories, design documents, or any other domain from this repository's examples. Treat bundled examples as examples only. In an empty project, ask domain-neutral questions before proposing root patterns or required files.
+
 ## Conversation Workflow
 
 1. Inspect existing context:
@@ -21,12 +23,14 @@ find . -maxdepth 3 -type f
 
 Read any existing `harness.yaml`, sample project files, and current `document-harness.lock` if present.
 
-2. Ask the user one focused question at a time. Start with the contract goal:
+2. Ask the user one focused question at a time. Start with the contract goal. Use neutral wording:
 
-- Which files should be treated as root files?
-- What related documents or tests should each root require?
-- What must those related files promise?
-- Should different root naming patterns map to different variants?
+- Which files or objects should be supervised as roots?
+- What companion files, records, or checks should each root require?
+- What should each companion promise or prove?
+- Should different root naming or path patterns map to different variants?
+
+If the project is empty, do not suggest a default language-specific model. Ask what kind of artifacts the user plans to create and what obligations should surround those artifacts.
 
 3. Explain the proposed harness in user-facing terms before writing:
 
@@ -46,9 +50,9 @@ node document-harness.js <projectDir>
 
 6. Show the concise JSON result and explain what it means. If the output is surprising, revise the harness through another short question.
 
-## YAML Shape
+## Neutral Template
 
-Use this shape as the starting point:
+Use this neutral template after the user has chosen root and companion patterns. Replace every placeholder before writing `harness.yaml`.
 
 ```yaml
 avilable_type:
@@ -72,23 +76,23 @@ variant_require:
   priority: int
 
 document_root:
-  - "*.py"
+  - "<root-pattern>"
 
 document_chains:
-  "*.py":
+  "<root-pattern>":
     - variants:
         - variant:
             variant_require:
-              name: "*"
-              path: "*"
+              name: "<root-name-pattern>"
+              path: "<root-path-pattern>"
               priority: 10
             document_harness:
               - document:
-                name: "*_design"
-                type: .md
-                path: "./"
-                desc: 描述对应实现的详细设计
-                verify: 对应设计和代码实现一致
+                name: "<required-name>"
+                type: <required-type>
+                path: "<required-relative-path>"
+                desc: <what this companion must describe>
+                verify: <what consistency or evidence must be checked>
 ```
 
 ## Authoring Rules
@@ -103,4 +107,8 @@ document_chains:
 
 When presenting the file to the user, explain it in plain language:
 
-"This harness says: every `*.py` file is a root. For each root, the harness expects a sibling Markdown file named `<same-name>_design.md`. That Markdown file is expected to describe the implementation and stay consistent with the code. The verifier will report missing files and store promission status in `document-harness.lock`."
+"This harness says: every file matching `<root-pattern>` is a root. For each root, the harness expects `<required-name><required-type>` at `<required-relative-path>`. That companion is expected to satisfy the listed promissions. The verifier will report missing companions and store promission status in `document-harness.lock`."
+
+## Optional Example
+
+Only use a concrete example after the user has chosen that model. For example, if the user says Python source files need sibling design documents, then `*.py` roots and `*_design.md` companions are reasonable. Do not present that as the default for unrelated or empty projects.
